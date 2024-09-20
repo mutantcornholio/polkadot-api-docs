@@ -1,0 +1,52 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>transfer_assets | westend2_people</title><meta name="description" content="Documentation for westend2_people"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">westend2_people</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb"><li><a href="../modules.html">westend2_people</a></li><li><a href="../modules/Transactions.html">Transactions</a></li><li><a href="../modules/Transactions.PolkadotXcm.html">PolkadotXcm</a></li><li><a href="Transactions.PolkadotXcm.transfer_assets.html">transfer_assets</a></li></ul><h1>Type Alias transfer_assets</h1></div><div class="tsd-signature"><span class="tsd-kind-type-alias">transfer_<wbr/>assets</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TxDescriptor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">assets</span><span class="tsd-signature-symbol">: </span><a href="Types.XcmVersionedAssets.html" class="tsd-signature-type tsd-kind-type-alias">XcmVersionedAssets</a><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">beneficiary</span><span class="tsd-signature-symbol">: </span><a href="Types.XcmVersionedLocation.html" class="tsd-signature-type tsd-kind-type-alias">XcmVersionedLocation</a><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">dest</span><span class="tsd-signature-symbol">: </span><a href="Types.XcmVersionedLocation.html" class="tsd-signature-type tsd-kind-type-alias">XcmVersionedLocation</a><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">fee_asset_item</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">weight_limit</span><span class="tsd-signature-symbol">: </span><a href="Types.XcmV3WeightLimit.html" class="tsd-signature-type tsd-kind-type-alias">XcmV3WeightLimit</a><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></div><div class="tsd-comment tsd-typography"><p>Transfer some assets from the local chain to the destination chain through their local,
+destination or remote reserve, or through teleports.</p>
+<p>Fee payment on the destination side is made from the asset in the <code>assets</code> vector of
+index <code>fee_asset_item</code> (hence referred to as <code>fees</code>), up to enough to pay for
+<code>weight_limit</code> of weight. If more weight is needed than <code>weight_limit</code>, then the
+operation will fail and the sent assets may be at risk.</p>
+<p><code>assets</code> (excluding <code>fees</code>) must have same reserve location or otherwise be teleportable
+to <code>dest</code>, no limitations imposed on <code>fees</code>.</p>
+<ul>
+<li>
+<p>for local reserve: transfer assets to sovereign account of destination chain and
+forward a notification XCM to <code>dest</code> to mint and deposit reserve-based assets to
+<code>beneficiary</code>.</p>
+</li>
+<li>
+<p>for destination reserve: burn local assets and forward a notification to <code>dest</code> chain
+to withdraw the reserve assets from this chain's sovereign account and deposit them
+to <code>beneficiary</code>.</p>
+</li>
+<li>
+<p>for remote reserve: burn local assets, forward XCM to reserve chain to move reserves
+from this chain's SA to <code>dest</code> chain's SA, and forward another XCM to <code>dest</code> to mint
+and deposit reserve-based assets to <code>beneficiary</code>.</p>
+</li>
+<li>
+<p>for teleports: burn local assets and forward XCM to <code>dest</code> chain to mint/teleport
+assets and deposit them to <code>beneficiary</code>.</p>
+</li>
+<li>
+<p><code>origin</code>: Must be capable of withdrawing the <code>assets</code> and executing XCM.</p>
+</li>
+<li>
+<p><code>dest</code>: Destination context for the assets. Will typically be <code>X2(Parent, Parachain(..))</code> to send from parachain to parachain, or <code>X1(Parachain(..))</code> to send
+from relay to parachain.</p>
+</li>
+<li>
+<p><code>beneficiary</code>: A beneficiary location for the assets in the context of <code>dest</code>. Will
+generally be an <code>AccountId32</code> value.</p>
+</li>
+<li>
+<p><code>assets</code>: The assets to be withdrawn. This should include the assets used to pay the
+fee on the <code>dest</code> (and possibly reserve) chains.</p>
+</li>
+<li>
+<p><code>fee_asset_item</code>: The index into <code>assets</code> of the item which should be used to pay
+fees.</p>
+</li>
+<li>
+<p><code>weight_limit</code>: The remote-side weight limit, if any, for the XCM fee purchase.</p>
+</li>
+</ul>
+</div><div class="tsd-comment tsd-typography"></div><aside class="tsd-sources"><ul><li>Defined in Transactions/PolkadotXcm.ts:268</li></ul></aside></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div></div><div class="site-menu"><nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="../assets/icons.svg#icon-1"></use></svg><span>westend2_people</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
