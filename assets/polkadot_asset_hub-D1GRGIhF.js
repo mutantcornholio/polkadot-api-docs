@@ -1,1 +1,0 @@
-import{u as r,j as n}from"./index-CFsnnMik.js";import{R as s}from"./Reload-BraTHfVW.js";const m=void 0;function o(t){return n.jsx(s,{})}function c(t={}){const{wrapper:e}={...r(),...t.components};return e?n.jsx(e,{...t,children:n.jsx(o,{...t})}):o()}export{c as default,m as frontmatter};
